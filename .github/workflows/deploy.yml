@@ -1,0 +1,34 @@
+name: Deploy Angular to Firebase (Dev)
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        working-directory: hi-app
+        run: npm ci
+
+      - name: Build Angular App
+        working-directory: hi-app
+        run: npm run build -- --configuration production
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy to Firebase
+        working-directory: hi-app
+        run: firebase deploy --only hosting --project learn-ci-cd-a4ce3 --token ${{ secrets.FIREBASE_TOKEN }}
